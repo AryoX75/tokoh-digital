@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ryoo Digital Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0b0f; --card:#0f1115; --accent:#d4af37; --muted:#9aa1a6; --glass: rgba(255,255,255,0.03);
+      --radius:14px; font-family: 'Poppins', system-ui, Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#050507 0%, #0b0b0f 100%);color:#fff}
+    .container{max-width:1100px;margin:36px auto;padding:20px}
+
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:58px;height:58px;border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),#7b5cff);
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:#081;
+      box-shadow:0 6px 30px rgba(0,0,0,0.6); overflow:hidden;
+    }
+    .logo img{width:100%;height:100%;object-fit:cover;border-radius:12px;display:block}
+    .brand h1{margin:0;font-size:20px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+    .controls{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--accent);color:#0b0b0f;padding:10px 14px;border-radius:12px;font-weight:600;border:none;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:12px;color:var(--muted);cursor:pointer}
+
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:20px;margin-top:20px}
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:14px;backdrop-filter:blur(6px);box-shadow:0 6px 24px rgba(0,0,0,0.6);transition:transform .18s ease}
+    .card:hover{transform:translateY(-8px)}
+    .card img{width:100%;height:140px;object-fit:cover;border-radius:10px}
+    .product-name{font-weight:600;margin:8px 0}
+    .product-desc{color:var(--muted);font-size:13px;height:36px;overflow:hidden}
+    .product-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+    .price{font-weight:700}
+    .buy{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
+
+    aside{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;height:100%}
+    .mutetoggle{display:flex;gap:8px;align-items:center}
+    label.switch{position:relative;display:inline-block;width:48px;height:26px}
+    label.switch input{opacity:0;width:0;height:0}
+    .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#222;border-radius:26px}
+    .slider:before{position:absolute;content:"";height:18px;width:18px;left:4px;top:4px;background:white;border-radius:50%;transition:.2s}
+    input:checked + .slider{background:var(--accent)}
+    input:checked + .slider:before{transform:translateX(22px)}
+
+    footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* modal & dashboard */
+    .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:40}
+    .modal{background:var(--card);padding:18px;border-radius:12px;min-width:320px;max-width:720px;max-height:90vh;overflow:auto}
+    .field{display:flex;flex-direction:column;margin-bottom:10px}
+    .field input,.field textarea{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff}
+    .product-list{margin-top:10px;max-height:280px;overflow:auto}
+    .pl-item{display:flex;gap:8px;align-items:center;padding:8px;background:var(--glass);border-radius:10px;margin-bottom:8px}
+    .small{font-size:12px;color:var(--muted)}
+    .logo-preview{width:80px;height:80px;border-radius:10px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.brand h1{font-size:18px}.container{padding:12px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo" id="logoContainer"><span id="logoLetter">R</span></div>
+        <div>
+          <h1 id="shopTitle">Ryoo Digital Store</h1>
+          <p id="shopSubtitle">RYOO MENYEDIAKAN KEBUTUHAN ANDA!</p>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="ghost" id="ownerBtn">Login Owner</button>
+        <button class="btn" id="openDashboard" style="display:none">Dashboard</button>
+      </div>
+    </header>
+
+    <div class="hero">
+      <main>
+        <section style="margin-top:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h2 style="margin:0" id="productHeading">Produk RyouzZz</h2>
+            <div class="small">Klik <strong>Beli Sekarang</strong> → langsung chat Telegram owner</div>
+          </div>
+
+          <div class="cards" id="productGrid"></div>
+        </section>
+
+        <footer>
+          Dibuat oleh @RyouzZz
+        </footer>
+      </main>
+
+      <aside>
+        <h3>Pengalaman Eksklusif</h3>
+        <p class="small">Tema premium dengan musik latar & efek scroll.</p>
+        <div style="height:10px"></div>
+        <div class="mutetoggle">
+          <span class="small">Musik saat scroll</span>
+          <label class="switch">
+            <input type="checkbox" id="musicEnabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div style="height:12px"></div>
+        <div>
+          <div class="small">Telegram tujuan (Preview)</div>
+          <div id="telPreview" style="margin-top:6px;color:var(--accent);font-weight:600;word-break:break-word">@RyouzZz</div>
+        </div>
+
+        <div style="height:12px"></div>
+        <div style="display:flex;gap:8px">
+          <button class="ghost" id="openOwner">Login Owner</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- audio sederhana (letakkan ss.mp3 di folder yang sama) -->
+  <audio id="bgAudio" loop src="ff.mp3"></audio>
+
+  <!-- modal owner/login/dashboard -->
+  <div class="modal-back" id="modalBack">
+    <div class="modal" id="modal"></div>
+  </div>
+
+  <script>
+    /***** CONFIG *****/
+    const STORAGE_KEY = 'ryoo_store_v1';
+    const DEFAULT_OWNER_PASSWORD = 'ryoo123';
+    /******************/
+
+    // SAMPLE PRODUCTS
+    const defaultProducts = [
+      {id:cryptoRandom(),name:'Template Instagram Aesthetic',desc:'Pack template feed & story premium',img:'https://images.pexels.com/photos/2681319/pexels-photo-2681319.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',price:'Rp 59.000'},
+      {id:cryptoRandom(),name:'Preset Lightroom - Golden Hour',desc:'Preset untuk foto aesthetic & profesional',img:'https://images.pexels.com/photos/3771086/pexels-photo-3771086.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',price:'Rp 49.000'},
+      {id:cryptoRandom(),name:'Pack Sound Effects Premium',desc:'SFX eksklusif buat creator',img:'https://images.pexels.com/photos/164821/pexels-photo-164821.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',price:'Rp 79.000'}
+    ];
+
+    // STATE
+    let store = {ownerPassword: DEFAULT_OWNER_PASSWORD, telegram:'RyouzZz', products: [], logo: null};
+    const modalBack = document.getElementById('modalBack');
+    const modal = document.getElementById('modal');
+    const productGrid = document.getElementById('productGrid');
+    const telPreview = document.getElementById('telPreview');
+    const logoContainer = document.getElementById('logoContainer');
+    const logoLetter = document.getElementById('logoLetter');
+
+    // LOAD / SAVE
+    function loadStore(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        try{ store = JSON.parse(raw); }catch(e){ console.error(e); localStorage.removeItem(STORAGE_KEY); }
+      } else {
+        store.products = defaultProducts;
+        saveStore();
+      }
+      renderProducts(); updatePreview(); updateLogoFromStore();
+    }
+    function saveStore(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }
+
+    // RENDER PRODUCTS
+    function renderProducts(){
+      productGrid.innerHTML='';
+      if(!store.products || store.products.length===0){
+        productGrid.innerHTML='<div class="small">Belum ada produk. Login owner untuk menambah.</div>'; return;
+      }
+      store.products.forEach(p=>{
+        const el = document.createElement('div'); el.className='card';
+        el.innerHTML = `
+          <img src="${escapeHtml(p.img||('https://picsum.photos/seed/'+p.id+'/600/400'))}" alt="${escapeHtml(p.name)}" onerror="this.src='https://picsum.photos/600/400'">
+          <div class="product-name">${escapeHtml(p.name)}</div>
+          <div class="product-desc">${escapeHtml(p.desc)}</div>
+          <div class="product-row">
+            <div class="price">${escapeHtml(p.price||'—')}</div>
+            <div>
+              <button class="buy" onclick="buyProduct('${p.id}')">Beli Sekarang</button>
+            </div>
+          </div>
+        `;
+        productGrid.appendChild(el);
+      });
+    }
+
+    // BUY -> open telegram chat with store.telegram
+    function buyProduct(id){
+      const p = store.products.find(x=>x.id===id);
+      if(!p) return alert('Produk tidak ditemukan');
+      const username = store.telegram || 'RyouzZz';
+      const message = encodeURIComponent(`Halo ${username}, saya mau beli produk: ${p.name} (Harga: ${p.price || '—'})`);
+      const url = `https://t.me/${username}?text=${message}`;
+      window.open(url, '_blank');
+    }
+
+    // OWNER MODAL FLOWS
+    document.getElementById('ownerBtn').addEventListener('click', ()=>openLogin());
+    document.getElementById('openOwner').addEventListener('click', ()=>openLogin());
+    document.getElementById('openDashboard').addEventListener('click', ()=>openDashboard());
+
+    function openLogin(){
+      modalBack.style.display='flex';
+      modal.innerHTML = `
+        <h3>Login Owner</h3>
+        <div class="field"><label>Password</label><input id="ownerPass" type="password" placeholder="Password owner"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end"><button class="ghost" id="closeModal">Batal</button><button class="btn" id="loginNow">Masuk</button></div>
+      `;
+      document.getElementById('closeModal').onclick = closeModal;
+      document.getElementById('loginNow').onclick = ()=>{
+        const val = document.getElementById('ownerPass').value;
+        if(val === store.ownerPassword){
+          closeModal(); openDashboard();
+        } else {
+          alert('Password salah');
+        }
+      }
+    }
+
+    function openDashboard(){
+      modalBack.style.display='flex';
+      modal.innerHTML = `
+        <h3>Dashboard Owner</h3>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+          <div class="logo-preview" id="dashLogoPreview">${store.logo ? `<img src="${escapeHtml(store.logo)}">` : '<div style="padding:8px;color:var(--muted)">No logo</div>'}</div>
+          <div style="flex:1">
+            <div class="field"><label>Telegram tujuan (tanpa @)</label><input id="cfgTel" value="${escapeHtml(store.telegram)}"></div>
+            <div class="field"><label>Ubah Password Owner (kosong = tidak diubah)</label><input id="cfgPass" placeholder="Isi jika ingin ganti password"></div>
+          </div>
+        </div>
+
+        <div class="field"><label>Upload Logo (file)</label><input id="logoFile" type="file" accept="image/*"></div>
+        <div style="display:flex;gap:8px;margin-bottom:12px"><button class="ghost" id="removeLogoBtn">Hapus Logo</button></div>
+
+        <hr>
+        <h4>Tambah Produk</h4>
+        <div class="field"><label>Nama</label><input id="prodName"></div>
+        <div class="field"><label>Deskripsi</label><textarea id="prodDesc"></textarea></div>
+        <div class="field"><label>Gambar (URL)</label><input id="prodImg"></div>
+        <div class="field"><label>Harga</label><input id="prodPrice"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px"><button class="ghost" id="closeDash">Tutup</button><button class="btn" id="addProdBtn">Tambah Produk</button></div>
+        <hr>
+        <h4>Produk Saat Ini</h4>
+        <div class="product-list" id="plList"></div>
+      `;
+
+      // bindings
+      document.getElementById('closeDash').onclick = closeModal;
+      document.getElementById('addProdBtn').onclick = ()=>{
+        const name = document.getElementById('prodName').value.trim();
+        if(!name) return alert('Nama diperlukan');
+        const desc = document.getElementById('prodDesc').value.trim();
+        const img = document.getElementById('prodImg').value.trim();
+        const price = document.getElementById('prodPrice').value.trim();
+        const newP = {id:cryptoRandom(),name,desc,img,price};
+        store.products.unshift(newP); saveStore(); renderProducts(); renderProductList();
+        document.getElementById('prodName').value='';document.getElementById('prodDesc').value='';document.getElementById('prodImg').value='';document.getElementById('prodPrice').value='';
+      }
+
+      document.getElementById('cfgTel').onchange = (e)=>{store.telegram = e.target.value.trim(); saveStore(); updatePreview()}
+      document.getElementById('cfgPass').onchange = (e)=>{const v=e.target.value.trim(); if(v.length>0){store.ownerPassword=v; saveStore(); alert('Password diubah')}}
+
+      // logo upload handler
+      const logoInput = document.getElementById('logoFile');
+      logoInput.addEventListener('change', (ev)=>{
+        const f = ev.target.files && ev.target.files[0];
+        if(!f) return;
+        if(!f.type.startsWith('image/')) return alert('Pilih file gambar.');
+        const reader = new FileReader();
+        reader.onload = function(e){
+          store.logo = e.target.result; // base64 data URL
+          saveStore();
+          updateLogoFromStore();
+          // update preview inside modal if present
+          const lp = document.getElementById('dashLogoPreview');
+          if(lp) lp.innerHTML = `<img src="${escapeHtml(store.logo)}">`;
+        }
+        reader.readAsDataURL(f);
+      });
+
+      document.getElementById('removeLogoBtn').onclick = ()=>{
+        if(!confirm('Hapus logo dari penyimpanan?')) return;
+        store.logo = null; saveStore(); updateLogoFromStore();
+        const lp = document.getElementById('dashLogoPreview');
+        if(lp) lp.innerHTML = '<div style="padding:8px;color:var(--muted)">No logo</div>';
+      }
+
+      renderProductList();
+
+      function renderProductList(){
+        const pl = document.getElementById('plList'); pl.innerHTML='';
+        store.products.forEach(p=>{
+          const item = document.createElement('div'); item.className='pl-item';
+          item.innerHTML = `
+            <img src="${escapeHtml(p.img||('https://picsum.photos/seed/'+p.id+'/100/80'))}" style="width:64px;height:48px;object-fit:cover;border-radius:8px">
+            <div style="flex:1"><div style="font-weight:600">${escapeHtml(p.name)}</div><div class="small">${escapeHtml(p.price||'—')}</div></div>
+            <div style="display:flex;flex-direction:column;gap:6px"><button class="ghost" onclick="editProduct('${p.id}')">Edit</button><button class="ghost" onclick="removeProduct('${p.id}')">Hapus</button></div>
+          `;
+          pl.appendChild(item);
+        })
+      }
+    }
+
+    function editProduct(id){
+      const p = store.products.find(x=>x.id===id); if(!p) return;
+      modal.innerHTML = `
+        <h3>Edit Produk</h3>
+        <div class="field"><label>Nama</label><input id="eName" value="${escapeHtml(p.name)}"></div>
+        <div class="field"><label>Deskripsi</label><textarea id="eDesc">${escapeHtml(p.desc)}</textarea></div>
+        <div class="field"><label>Gambar (URL)</label><input id="eImg" value="${escapeHtml(p.img)}"></div>
+        <div class="field"><label>Harga</label><input id="ePrice" value="${escapeHtml(p.price)}"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end"><button class="ghost" id="cancelEdit">Batal</button><button class="btn" id="saveEdit">Simpan</button></div>
+      `;
+      document.getElementById('cancelEdit').onclick = ()=>openDashboard();
+      document.getElementById('saveEdit').onclick = ()=>{
+        p.name = document.getElementById('eName').value.trim();
+        p.desc = document.getElementById('eDesc').value.trim();
+        p.img = document.getElementById('eImg').value.trim();
+        p.price = document.getElementById('ePrice').value.trim();
+        saveStore(); renderProducts(); openDashboard();
+      }
+    }
+
+    function removeProduct(id){
+  if(!confirm('Hapus produk ini?')) return;
+  store.products = store.products.filter(x => x.id !== id);
+  saveStore();
+  renderProducts();
+  
+  // render ulang daftar di dashboard kalau sedang terbuka
+  const plList = document.getElementById('plList');
+  if(plList) {
+    plList.innerHTML = '';
+    store.products.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'pl-item';
+      item.innerHTML = `
+        <img src="${escapeHtml(p.img || ('https://picsum.photos/seed/' + p.id + '/100/80'))}" style="width:64px;height:48px;object-fit:cover;border-radius:8px">
+        <div style="flex:1"><div style="font-weight:600">${escapeHtml(p.name)}</div><div class="small">${escapeHtml(p.price || '—')}</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="ghost" onclick="editProduct('${p.id}')">Edit</button>
+          <button class="ghost" onclick="removeProduct('${p.id}')">Hapus</button>
+        </div>
+      `;
+      plList.appendChild(item);
+    });
+  }
+}
+
+
+    function closeModal(){ modalBack.style.display='none'; modal.innerHTML=''; }
+    modalBack.addEventListener('click', (e)=>{ if(e.target===modalBack) closeModal(); })
+
+    // HELPERS
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+    function cryptoRandom(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4) }
+
+    // expose for inline onclick
+    window.removeProduct = removeProduct; window.editProduct = editProduct; window.buyProduct = buyProduct;
+
+    // PREVIEW / LOGO UTIL
+    function updatePreview(){ telPreview.textContent = store.telegram ? ('@' + store.telegram) : '@RyouzZz'; }
+    function updateLogoFromStore(){
+      // replace logo container content with image if store.logo set, else fallback letter R
+      if(store.logo){
+        logoContainer.innerHTML = `<img src="${escapeHtml(store.logo)}" alt="logo">`;
+      } else {
+        logoContainer.innerHTML = `<span id="logoLetter">R</span>`;
+      }
+    }
+
+    // AUDIO: start after user interaction (safer untuk autoplay policies)
+    const audio = document.getElementById('bgAudio');
+    const musicEnabled = document.getElementById('musicEnabled');
+
+    // Try to play if allowed and enabled
+    function tryPlayAudio(){
+      if(!musicEnabled.checked) return;
+      // some browsers require element to have been interacted with; call play and ignore rejected promise
+      audio.play().catch(()=>{ /* ignore */ });
+    }
+    // Start on first meaningful user interaction
+    function bindFirstInteraction(){
+      function once(){ tryPlayAudio(); window.removeEventListener('click', once); window.removeEventListener('touchstart', once); window.removeEventListener('keydown', once); window.removeEventListener('scroll', once); }
+      window.addEventListener('click', once, {passive:true});
+      window.addEventListener('touchstart', once, {passive:true});
+      window.addEventListener('keydown', once, {passive:true});
+      window.addEventListener('scroll', once, {passive:true});
+    }
+    bindFirstInteraction();
+
+    // toggle checkbox handler
+    musicEnabled.addEventListener('change', ()=>{
+      if(musicEnabled.checked){
+        // attempt to play (may require prior interaction)
+        tryPlayAudio();
+      } else {
+        audio.pause();
+      }
+    });
+
+    // INIT
+    loadStore();
+
+    // small note: button "openDashboard" appears only after login; session not persistent (keamanan sederhana)
+    // if you want persistent login, would need backend or token storage (not implemented here)
+  </script>
+</body>
+</html>
